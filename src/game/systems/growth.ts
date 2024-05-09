@@ -2,7 +2,7 @@ import { GameState } from '@/game/game-state';
 
 class GrowthSystem {
   update(ctx: CanvasRenderingContext2D, deltaTime: number, gameState: GameState) {
-    for (const entity of gameState.entities) {
+    for (const entity of gameState.scene.entities) {
       // grow crops
       const growthStage = entity.getComponent('GrowthStage');
       if (growthStage) {

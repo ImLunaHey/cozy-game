@@ -1,3 +1,7 @@
+import { MainMenu } from '@/scenes/main-menu';
+import { GameState } from '../game-state';
+import { World } from '@/scenes/world';
+
 type Alphabet =
   | 'a'
   | 'b'
@@ -92,6 +96,13 @@ class Input {
     return Array.from(this.keyStates.entries())
       .filter(([, value]) => value)
       .map(([key]) => key);
+  }
+
+  update(ctx: CanvasRenderingContext2D, deltaTime: number, gameState: GameState) {
+    if (this.isKeyPressed('Escape')) {
+      this.keyStates.clear();
+      gameState.scene = gameState.scene.constructor.name === 'MainMenu' ? new World() : new MainMenu();
+    }
   }
 }
 

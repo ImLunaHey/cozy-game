@@ -121,7 +121,7 @@ export default function Game() {
 
             <Button
               onClick={() => {
-                const player = gameState.current.entities.find((entity) => entity.type === 'Player');
+                const player = gameState.current.scene.entities.find((entity) => entity.type === 'Player');
                 if (!player) return;
 
                 const position = player.getComponent('Position');

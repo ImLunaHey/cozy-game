@@ -36,8 +36,9 @@ type EntityTypes =
   // Other things
   | 'Ground'
   | 'Decoration'
-  | 'World'
-  | 'Player';
+  | 'Player'
+  // ui
+  | 'Button';
 
 type ComponentTypeMap = {
   Animation: Animation;

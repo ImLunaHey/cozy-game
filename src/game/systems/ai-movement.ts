@@ -2,12 +2,7 @@ import { GameState } from '../game-state';
 
 class AiMovementSystem {
   update(ctx: CanvasRenderingContext2D, deltaTime: number, gameState: GameState) {
-    const world = gameState.entities.find((e) => e.type === 'World');
-    const worldPosition = world?.getComponent('Position');
-    const worldDimensions = world?.getComponent('Dimensions');
-    if (!world || !worldPosition || !worldDimensions) return;
-
-    for (const entity of gameState.entities) {
+    for (const entity of gameState.scene.entities) {
       // dont move the player
       if (entity.type === 'Player') continue;
 
@@ -61,7 +56,8 @@ class AiMovementSystem {
       if (position.x < bounds.x) position.x = bounds.x;
       if (position.x + dimensions.width > bounds.x + bounds.width) position.x = bounds.x + bounds.width - dimensions.width;
       if (position.y < bounds.y) position.y = bounds.y;
-      if (position.y + dimensions.height > bounds.y + bounds.height) position.y = bounds.y + bounds.height - dimensions.height;
+      if (position.y + dimensions.height > bounds.y + bounds.height)
+        position.y = bounds.y + bounds.height - dimensions.height;
     }
   }
 }

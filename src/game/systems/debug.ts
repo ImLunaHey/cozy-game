@@ -29,7 +29,7 @@ const drawEntityCount = (ctx: CanvasRenderingContext2D, gameState: GameState) =>
   // Draw the entity count
   ctx.fillStyle = 'black';
   ctx.font = '16px monospace';
-  ctx.fillText('Entities: ' + gameState.entities.length, 10, canvas.height - 50);
+  ctx.fillText('Entities: ' + gameState.scene.entities.length, 10, canvas.height - 50);
 };
 
 const drawInputInfo = (ctx: CanvasRenderingContext2D) => {
@@ -48,7 +48,17 @@ const drawInputInfo = (ctx: CanvasRenderingContext2D) => {
 const drawBox = (ctx: CanvasRenderingContext2D) => {
   // Draw a box
   ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-  ctx.fillRect(0, ctx.canvas.height - 100, ctx.canvas.width, 100);
+  ctx.fillRect(0, ctx.canvas.height - 120, ctx.canvas.width, 120);
+};
+
+const drawSceneInfo = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
+  // Get the canvas
+  const canvas = ctx.canvas;
+
+  // Draw the scene info
+  ctx.fillStyle = 'black';
+  ctx.font = '16px monospace';
+  ctx.fillText('Scene: ' + gameState.scene.constructor.name, 10, canvas.height - 90);
 };
 
 class DebugSystem {
@@ -61,6 +71,7 @@ class DebugSystem {
     drawTick(ctx, gameState);
     drawEntityCount(ctx, gameState);
     drawInputInfo(ctx);
+    drawSceneInfo(ctx, gameState);
   }
 }
 

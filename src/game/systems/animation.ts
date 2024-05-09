@@ -2,7 +2,7 @@ import { GameState } from '@/game/game-state';
 
 class AnimationSystem {
   update(_ctx: CanvasRenderingContext2D, deltaTime: number, gameState: GameState) {
-    for (const entity of gameState.entities) {
+    for (const entity of gameState.scene.entities) {
       const animation = entity.getComponent('Animation');
       if (!animation) {
         continue;

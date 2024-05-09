@@ -5,7 +5,7 @@ import { Entity } from '../entity';
 class CameraSystem {
   centerCamera(ctx: CanvasRenderingContext2D, gameState: GameState) {
     // as the player moves keep the camera centered on them
-    const player = gameState.entities.find((entity) => entity.type === 'Player');
+    const player = gameState.scene.entities.find((entity) => entity.type === 'Player');
     if (!player) {
       return;
     }
@@ -127,7 +127,7 @@ class CameraSystem {
   }
 
   drawSoil(ctx: CanvasRenderingContext2D, gameState: GameState) {
-    for (const entity of gameState.entities) {
+    for (const entity of gameState.scene.entities) {
       // check if this entity has a soil, position and dimensions
       const soil = entity.getComponent('Soil');
       const position = entity.getComponent('Position');
@@ -165,7 +165,7 @@ class CameraSystem {
   drawDebug(ctx: CanvasRenderingContext2D, gameState: GameState) {
     // draw debug outlines
     if (!gameState.__internal.debug) return;
-    for (const entity of gameState.entities) {
+    for (const entity of gameState.scene.entities) {
       const position = entity.getComponent('Position');
       const dimensions = entity.getComponent('Dimensions');
       if (!position || !dimensions) continue;
@@ -194,7 +194,7 @@ class CameraSystem {
     this.drawEntities(
       ctx,
       gameState,
-      gameState.entities.filter((entitiy) => {
+      gameState.scene.entities.filter((entitiy) => {
         const position = entitiy.getComponent('Position');
         return position?.layer === 'ui';
       }),
@@ -205,7 +205,7 @@ class CameraSystem {
     this.drawEntities(
       ctx,
       gameState,
-      gameState.entities.filter((entitiy) => {
+      gameState.scene.entities.filter((entitiy) => {
         const position = entitiy.getComponent('Position');
         return position?.layer === 'foreground' || position?.layer === 'player';
       }),
@@ -216,7 +216,7 @@ class CameraSystem {
     this.drawEntities(
       ctx,
       gameState,
-      gameState.entities.filter((entitiy) => {
+      gameState.scene.entities.filter((entitiy) => {
         const position = entitiy.getComponent('Position');
         return position?.layer === 'background';
       }),
