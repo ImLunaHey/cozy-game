@@ -45,3 +45,4 @@ next-env.d.ts
 # https://almostapixel.itch.io/small-burg-village-pack
 # https://almostapixel.itch.io/smallburg-plantscraft-pack
 public/assets/*
+!public/assets/README.md
