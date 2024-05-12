@@ -26,20 +26,7 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Get token from Github App
-        uses: actions/create-github-app-token@v1
-        id: app_token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PEM }}
-          # owner is required, otherwise the creds will fail the checkout step
-          owner: ${{ github.repository_owner }}
-
-      - name: Checkout from GitHub
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-          token: ${{ steps.app_token.outputs.token }}
+      - uses: actions/checkout@v4
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -62,6 +49,9 @@ jobs:
 
       - name: install frontend dependencies
         run: npm install
+
+      - name: download assets
+        run: wget ${{ secrets.ASSET_URL }} -O assets.zip && unzip assets.zip && mv assets public/assets
 
       - uses: tauri-apps/tauri-action@v0
         env:
