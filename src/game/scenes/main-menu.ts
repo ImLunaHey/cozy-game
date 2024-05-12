@@ -8,8 +8,8 @@ import { Clickable } from '@/game/components/clickable';
 import { Text } from '@/game/components/text';
 import { Hoverable } from '@/game/components/hoverable';
 import { World } from './world';
-import { appWindow } from '@tauri-apps/api/window';
 import { getEnvironment } from '@/common/get-enironment';
+import { appWindow } from '@tauri-apps/api/window';
 
 class Button extends Entity {
   constructor(text: string, onClick: (gameState: GameState) => void, y: number) {
