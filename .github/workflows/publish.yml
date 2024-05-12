@@ -33,6 +33,9 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: download assets
+        run: curl ${{ secrets.ASSET_URL }} -L -o assets.zip && unzip assets.zip && mv cozy-game-assets-main/assets public/assets
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -49,9 +52,6 @@ jobs:
 
       - name: install frontend dependencies
         run: npm install
-
-      - name: download assets
-        run: wget ${{ secrets.ASSET_URL }} -O assets.zip && unzip assets.zip && mv cozy-game-assets-main/assets public/assets
 
       - uses: tauri-apps/tauri-action@v0
         env:
