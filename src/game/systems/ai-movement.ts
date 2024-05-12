@@ -52,12 +52,25 @@ class AiMovementSystem {
       position.x += vx * deltaTime;
       position.y += vy * deltaTime;
 
+      const outofBounds =
+        position.x < bounds.x ||
+        position.x + dimensions.width > bounds.x + bounds.width ||
+        position.y < bounds.y ||
+        position.y + dimensions.height > bounds.y + bounds.height;
+
       // make sure the entity stays within bounds
-      if (position.x < bounds.x) position.x = bounds.x;
-      if (position.x + dimensions.width > bounds.x + bounds.width) position.x = bounds.x + bounds.width - dimensions.width;
-      if (position.y < bounds.y) position.y = bounds.y;
-      if (position.y + dimensions.height > bounds.y + bounds.height)
-        position.y = bounds.y + bounds.height - dimensions.height;
+      if (outofBounds) {
+        if (position.x < bounds.x) position.x = bounds.x;
+        if (position.x + dimensions.width > bounds.x + bounds.width) position.x = bounds.x + bounds.width - dimensions.width;
+        if (position.y < bounds.y) position.y = bounds.y;
+        if (position.y + dimensions.height > bounds.y + bounds.height)
+          position.y = bounds.y + bounds.height - dimensions.height;
+
+        movement.destination = {
+          x: Math.max(bounds.x, Math.random() * bounds.width + bounds.x),
+          y: Math.max(bounds.y, Math.random() * bounds.height + bounds.y),
+        };
+      }
     }
   }
 }
