@@ -2,11 +2,14 @@ import { Animation } from './components/animation';
 import { Asset } from './components/asset';
 import { AssetSet } from './components/asset-set';
 import { Background } from './components/background';
+import { Clickable } from './components/clickable';
 import { Dimensions } from './components/dimensions';
 import { GrowthStage } from './components/growth-stage';
+import { Hoverable } from './components/hoverable';
 import { Movement } from './components/movement';
 import { Position } from './components/position';
 import { Soil } from './components/soil';
+import { Text } from './components/text';
 
 type EntityTypes =
   // Crops
@@ -45,11 +48,14 @@ type ComponentTypeMap = {
   Asset: Asset;
   AssetSet: AssetSet;
   Background: Background;
+  Clickable: Clickable;
   Dimensions: Dimensions;
   GrowthStage: GrowthStage;
+  Hoverable: Hoverable;
   Movement: Movement;
   Position: Position;
   Soil: Soil;
+  Text: Text;
 };
 
 type Component = ComponentTypeMap[keyof ComponentTypeMap];

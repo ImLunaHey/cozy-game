@@ -61,6 +61,16 @@ const drawSceneInfo = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
   ctx.fillText('Scene: ' + gameState.scene.constructor.name, 10, canvas.height - 90);
 };
 
+const drawZoomLevel = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
+  // Get the canvas
+  const canvas = ctx.canvas;
+
+  // Draw the zoom level
+  ctx.fillStyle = 'black';
+  ctx.font = '16px monospace';
+  ctx.fillText('Zoom: ' + gameState.__internal.zoom, 10, canvas.height - 110);
+};
+
 class DebugSystem {
   draw(ctx: CanvasRenderingContext2D, deltaTime: number, gameState: GameState) {
     // only draw debug info if debug mode is enabled
@@ -72,6 +82,7 @@ class DebugSystem {
     drawEntityCount(ctx, gameState);
     drawInputInfo(ctx);
     drawSceneInfo(ctx, gameState);
+    drawZoomLevel(ctx, gameState);
   }
 }
 

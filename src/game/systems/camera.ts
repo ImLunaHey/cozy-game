@@ -127,6 +127,7 @@ class CameraSystem {
   }
 
   drawSoil(ctx: CanvasRenderingContext2D, gameState: GameState) {
+    ctx.save();
     for (const entity of gameState.scene.entities) {
       // check if this entity has a soil, position and dimensions
       const soil = entity.getComponent('Soil');
@@ -151,18 +152,18 @@ class CameraSystem {
           : '#000000';
 
       // make the soil a little transparent
-      ctx.save();
       ctx.globalAlpha = 0.75;
 
       // draw the soil as a rect with pixelated corners
       ctx.beginPath();
       ctx.roundRect(position.x + 5, position.y + 5, dimensions.width - 10, dimensions.height - 10, 10);
       ctx.fill();
-      ctx.restore();
     }
+    ctx.restore();
   }
 
   drawDebug(ctx: CanvasRenderingContext2D, gameState: GameState) {
+    ctx.save();
     // draw debug outlines
     if (!gameState.__internal.debug) return;
     for (const entity of gameState.scene.entities) {
@@ -188,9 +189,11 @@ class CameraSystem {
         ctx.strokeRect(movement.area.x, movement.area.y, movement.area.width, movement.area.height);
       }
     }
+    ctx.restore();
   }
 
   drawUI(ctx: CanvasRenderingContext2D, gameState: GameState) {
+    ctx.save();
     this.drawEntities(
       ctx,
       gameState,
@@ -199,6 +202,21 @@ class CameraSystem {
         return position?.layer === 'ui';
       }),
     );
+
+    // draw all the text components
+    for (const entity of gameState.scene.entities) {
+      const position = entity.getComponent('Position');
+      const dimensions = entity.getComponent('Dimensions');
+      const text = entity.getComponent('Text');
+      if (!position || !dimensions || !text) continue;
+
+      ctx.fillStyle = text.colour;
+      ctx.font = text.font;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text.content, position.x + dimensions.width / 2, position.y + dimensions.height / 2);
+    }
+    ctx.restore();
   }
 
   drawForeground(ctx: CanvasRenderingContext2D, gameState: GameState) {

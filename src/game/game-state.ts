@@ -1,4 +1,4 @@
-import { Scene } from '@/scenes/scene';
+import { Scene } from '@/game/scenes/scene';
 import { Animation } from './components/animation';
 import { Asset } from './components/asset';
 import { AssetSet } from './components/asset-set';
@@ -9,7 +9,7 @@ import { Movement } from './components/movement';
 import { Position } from './components/position';
 import { Soil } from './components/soil';
 import { Entity } from './entity';
-import { World } from '@/scenes/world';
+import { MainMenu } from '@/game/scenes/main-menu';
 
 /**
  * reconstruct components based on their types
@@ -54,18 +54,25 @@ export type GameState = {
   __internal: {
     debug: boolean;
     state: 'playing' | 'paused' | 'game-over' | 'loading';
+    zoom: number;
+    scenes: Scene[];
   };
 
   tick: number;
   scene: Scene;
 };
 
-export const loadGameState = (): GameState => ({
-  __internal: {
-    debug: false,
-    state: 'playing' as const,
-  },
+export const loadGameState = (): GameState => {
+  const mainMenu = new MainMenu();
+  return {
+    __internal: {
+      debug: false,
+      state: 'playing' as const,
+      zoom: 1,
+      scenes: [mainMenu],
+    },
 
-  tick: 1,
-  scene: new World(),
-});
+    tick: 1,
+    scene: mainMenu,
+  };
+};

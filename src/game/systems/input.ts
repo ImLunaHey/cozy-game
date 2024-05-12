@@ -1,6 +1,6 @@
-import { MainMenu } from '@/scenes/main-menu';
+import { MainMenu } from '@/game/scenes/main-menu';
 import { GameState } from '../game-state';
-import { World } from '@/scenes/world';
+import { World } from '@/game/scenes/world';
 
 type Alphabet =
   | 'a'
@@ -29,31 +29,49 @@ type Alphabet =
   | 'x'
   | 'y'
   | 'z';
-type Direction = 'up' | 'down' | 'left' | 'right';
+type Numbers = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+type DirectionX = 'left' | 'right';
+type DirectionY = 'up' | 'down';
+type Direction = `${DirectionX | DirectionY}`;
 type KnownKeyCodes =
   | `Key${Uppercase<Alphabet>}`
   | 'Space'
   | 'Enter'
   | 'Escape'
-  | 'ShiftLeft'
-  | 'ShiftRight'
-  | `Arrow${Capitalize<Direction>}`;
+  | 'Minus'
+  | 'Equal'
+  | 'Backquote'
+  | `Arrow${Capitalize<Direction>}`
+  | `Shift${Capitalize<DirectionX>}`
+  | `Meta${Capitalize<DirectionX>}`
+  | `Control${Capitalize<DirectionX>}`
+  | `Digit${Numbers}`;
 
 class Input {
   public readonly type = 'Input';
   private keyStates: Map<string, boolean> = new Map();
+  private mouseState: { x: number; y: number; clicked: boolean } = { x: 0, y: 0, clicked: false };
 
   constructor() {
     const keydown = this.handleKeyDown.bind(this);
     const keyup = this.handleKeyUp.bind(this);
+    const mousemove = this.handleMouseMove.bind(this);
+    const mousedown = this.handleMouseDown.bind(this);
+    const mouseup = this.handleMouseUp.bind(this);
 
     // clean up event listeners
     window.removeEventListener('keydown', keydown);
     window.removeEventListener('keyup', keyup);
+    window.removeEventListener('mousemove', mousemove);
+    window.removeEventListener('mousedown', mousedown);
+    window.removeEventListener('mouseup', mouseup);
 
     // add event listeners
     window.addEventListener('keydown', keydown);
     window.addEventListener('keyup', keyup);
+    window.addEventListener('mousemove', mousemove);
+    window.addEventListener('mousedown', mousedown);
+    window.addEventListener('mouseup', mouseup);
   }
 
   handleKeyDown(event: KeyboardEvent) {
@@ -69,6 +87,28 @@ class Input {
     } else {
       this.keyStates.set(event.code, false);
     }
+  }
+
+  handleMouseMove(event: MouseEvent) {
+    this.mouseState = {
+      x: event.clientX,
+      y: event.clientY,
+      clicked: this.mouseState.clicked,
+    };
+  }
+
+  handleMouseDown(event: MouseEvent) {
+    event.preventDefault();
+    this.mouseState = {
+      x: event.clientX,
+      y: event.clientY,
+      clicked: true,
+    };
+  }
+
+  handleMouseUp(event: MouseEvent) {
+    event.preventDefault();
+    this.mouseState.clicked = false;
   }
 
   isKeyPressed(code: KnownKeyCodes): boolean {
@@ -99,9 +139,105 @@ class Input {
   }
 
   update(ctx: CanvasRenderingContext2D, deltaTime: number, gameState: GameState) {
+    // check if escape key is pressed
     if (this.isKeyPressed('Escape')) {
       this.keyStates.clear();
-      gameState.scene = gameState.scene.constructor.name === 'MainMenu' ? new World() : new MainMenu();
+
+      // if the game is running allow the user to open the main menu
+      if (gameState.scene instanceof World) {
+        // backup the world scene if it doesnt exist in the internal scenes
+        if (!gameState.__internal.scenes.includes(gameState.scene)) {
+          gameState.__internal.scenes.push(gameState.scene);
+        }
+
+        // open the main menu
+        const mainMenu = gameState.__internal.scenes.find((scene) => scene instanceof MainMenu)!;
+        gameState.scene = mainMenu;
+      }
+
+      // if the main menu is open and we have an existing scene switch back to it
+      else if (gameState.scene instanceof MainMenu && gameState.__internal.scenes.length > 0) {
+        const lastScene = gameState.__internal.scenes.pop()!;
+        gameState.scene = lastScene;
+      }
+    }
+
+    // check if mouse clicked on a clickable entity
+    if (this.mouseState.clicked) {
+      this.mouseState.clicked = false;
+      const entities = gameState.scene.entities.filter((entity) => entity.hasComponent('Clickable'));
+      const clickedEntity = entities.find((entity) => {
+        const position = entity.getComponent('Position');
+        const dimensions = entity.getComponent('Dimensions');
+        return (
+          position &&
+          dimensions &&
+          this.mouseState.x >= position.x &&
+          this.mouseState.x <= position.x + dimensions.width &&
+          this.mouseState.y >= position.y &&
+          this.mouseState.y <= position.y + dimensions.height
+        );
+      });
+
+      if (clickedEntity) {
+        const clickable = clickedEntity.getComponent('Clickable');
+        clickable?.onClick(gameState);
+      }
+    }
+
+    // check if mouse is hovering over a hoverable entity
+    const entities = gameState.scene.entities.filter((entity) => entity.hasComponent('Hoverable'));
+    const hoveredEntity = entities.find((entity) => {
+      const position = entity.getComponent('Position');
+      const dimensions = entity.getComponent('Dimensions');
+      return (
+        position &&
+        dimensions &&
+        this.mouseState.x >= position.x &&
+        this.mouseState.x <= position.x + dimensions.width &&
+        this.mouseState.y >= position.y &&
+        this.mouseState.y <= position.y + dimensions.height
+      );
+    });
+
+    // set the newly hovered entity to be hovering
+    if (hoveredEntity) {
+      const hoverable = hoveredEntity.getComponent('Hoverable');
+      if (hoverable) {
+        hoverable.isHovering = true;
+        hoverable.onHoverStart(gameState);
+      }
+    }
+
+    // set all other entities to not be hovering
+    for (const entity of entities) {
+      if (entity !== hoveredEntity) {
+        const hoverable = entity.getComponent('Hoverable');
+        if (!hoverable) continue;
+        if (hoverable.isHovering) {
+          hoverable.isHovering = false;
+          hoverable.onHoverEnd(gameState);
+        }
+      }
+    }
+
+    // ctrl - and ctrl + to zoom in and out
+    if (this.isKeyPressed('MetaLeft') || this.isKeyPressed('MetaRight')) {
+      if (this.isKeyPressed('Minus')) {
+        gameState.__internal.zoom -= 0.5;
+      } else if (this.isKeyPressed('Equal')) {
+        gameState.__internal.zoom += 0.5;
+      } else if (this.isKeyPressed('Digit0')) {
+        gameState.__internal.zoom = 1;
+      }
+
+      // clamp zoom level between 0.25 and 10
+      gameState.__internal.zoom = Math.min(10, Math.max(0.25, gameState.__internal.zoom));
+    }
+
+    // backtick to toggle debug mode
+    if (this.isKeyPressed('Backquote')) {
+      gameState.__internal.debug = !gameState.__internal.debug;
     }
   }
 }

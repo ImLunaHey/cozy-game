@@ -19,8 +19,8 @@ class AiMovementSystem {
       // if the entitiy has no destination, set one
       if (!movement.destination) {
         movement.destination = {
-          x: Math.random() * bounds.width + bounds.x,
-          y: Math.random() * bounds.height + bounds.y,
+          x: Math.max(bounds.x, Math.random() * bounds.width + bounds.x),
+          y: Math.max(bounds.y, Math.random() * bounds.height + bounds.y),
         };
 
         // set direction based on destination
@@ -39,8 +39,8 @@ class AiMovementSystem {
       // if the entity is close to the destination, set a new one
       if (dist < 5) {
         movement.destination = {
-          x: Math.random() * bounds.width + bounds.x,
-          y: Math.random() * bounds.height + bounds.y,
+          x: Math.max(bounds.x, Math.random() * bounds.width + bounds.x),
+          y: Math.max(bounds.y, Math.random() * bounds.height + bounds.y),
         };
       }
 

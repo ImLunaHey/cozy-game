@@ -86,58 +86,7 @@ export default function Game() {
     };
   }, []);
 
-  return (
-    <div className="flex flex-row gap-2">
-      <div className="flex flex-col gap-2 absolute p-2 w-56">
-        <Button
-          onClick={() => {
-            gameState.current.__internal.state = state === 'paused' ? 'playing' : 'paused';
-            setState(gameState.current.__internal.state);
-          }}
-        >
-          {state === 'paused' ? 'Play' : 'Pause'}
-        </Button>
-
-        <Button
-          onClick={() => {
-            gameState.current.__internal.debug = !gameState.current.__internal.debug;
-            setDebugMode(gameState.current.__internal.debug);
-          }}
-        >
-          Toggle debug mode
-        </Button>
-
-        {debugMode && (
-          <>
-            <Button
-              onClick={() => {
-                // clear local storage
-                localStorage.removeItem('gameState');
-                gameState.current = loadGameState();
-              }}
-            >
-              Reset state
-            </Button>
-
-            <Button
-              onClick={() => {
-                const player = gameState.current.scene.entities.find((entity) => entity.type === 'Player');
-                if (!player) return;
-
-                const position = player.getComponent('Position');
-                if (!position) return;
-                position.x = 0;
-                position.y = 0;
-              }}
-            >
-              Move player to [0, 0]
-            </Button>
-          </>
-        )}
-      </div>
-      <canvas ref={canvasRef} className="w-full h-full" />
-    </div>
-  );
+  return <canvas ref={canvasRef} className="w-full h-full" />;
 }
 
 type ButtonProps = {
