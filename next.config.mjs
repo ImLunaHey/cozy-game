@@ -8,6 +8,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  // we need this for the tauri build
+  // eslint-disable-next-line next-on-pages/no-unsupported-configs
+  output: 'export',
+};
 
 export default nextConfig;
